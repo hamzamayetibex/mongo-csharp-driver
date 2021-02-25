@@ -17,7 +17,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using MongoDB.Driver.Core.Bindings;
 using MongoDB.Driver.Core.Operations;
-
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
 namespace MongoDB.Driver
 {
     internal sealed class OperationExecutor : IOperationExecutor
@@ -57,6 +57,62 @@ namespace MongoDB.Driver
         public Task<IClientSessionHandle> StartImplicitSessionAsync(CancellationToken cancellationToken)
         {
             return _client.StartImplicitSessionAsync(cancellationToken);
+        }
+    }
+
+    public class OperationExecutorExtended : IOperationExecutor
+    {
+        private MongoClient _client;
+        private OperationExecutor _operationExecutor;
+
+
+        protected OperationExecutorExtended()
+        {
+        }
+        protected OperationExecutorExtended(MongoClient client)
+        {
+            _client = client;
+            _operationExecutor = new OperationExecutor(client);
+        }
+
+        protected MongoClient Client
+        {
+            set
+            {
+                _client = value;
+                _operationExecutor = new OperationExecutor(value);
+            }
+            get { return _client; }
+        }
+
+        public virtual TResult ExecuteReadOperation<TResult>(IReadBinding binding, IReadOperation<TResult> operation, CancellationToken cancellationToken)
+        {
+            return _operationExecutor.ExecuteReadOperation(binding, operation, cancellationToken);
+        }
+
+        public virtual async Task<TResult> ExecuteReadOperationAsync<TResult>(IReadBinding binding, IReadOperation<TResult> operation, CancellationToken cancellationToken)
+        {
+            return await _operationExecutor.ExecuteReadOperationAsync(binding, operation, cancellationToken).ConfigureAwait(false);
+        }
+
+        public virtual TResult ExecuteWriteOperation<TResult>(IWriteBinding binding, IWriteOperation<TResult> operation, CancellationToken cancellationToken)
+        {
+            return _operationExecutor.ExecuteWriteOperation(binding, operation, cancellationToken);
+        }
+
+        public virtual async Task<TResult> ExecuteWriteOperationAsync<TResult>(IWriteBinding binding, IWriteOperation<TResult> operation, CancellationToken cancellationToken)
+        {
+            return await _operationExecutor.ExecuteWriteOperationAsync(binding, operation, cancellationToken).ConfigureAwait(false);
+        }
+
+        public IClientSessionHandle StartImplicitSession(CancellationToken cancellationToken)
+        {
+            return _operationExecutor.StartImplicitSession(cancellationToken);
+        }
+
+        public Task<IClientSessionHandle> StartImplicitSessionAsync(CancellationToken cancellationToken)
+        {
+            return _operationExecutor.StartImplicitSessionAsync(cancellationToken);
         }
     }
 }

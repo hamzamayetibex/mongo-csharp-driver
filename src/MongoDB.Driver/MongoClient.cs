@@ -75,11 +75,12 @@ namespace MongoDB.Driver
         /// SCRAM-SHA-1 is the recommended alternative for now.
         /// </summary>
         /// <param name="settings">The settings.</param>
-        public MongoClient(MongoClientSettings settings)
+        /// <param name="operationExecutor"></param>
+        public MongoClient(MongoClientSettings settings, IOperationExecutor operationExecutor = null)
         {
             _settings = Ensure.IsNotNull(settings, nameof(settings)).FrozenCopy();
             _cluster = ClusterRegistry.Instance.GetOrCreateCluster(_settings.ToClusterKey());
-            _operationExecutor = new OperationExecutor(this);
+            _operationExecutor = operationExecutor ?? new OperationExecutor(this);
             if (settings.AutoEncryptionOptions != null)
             {
                 _libMongoCryptController = new AutoEncryptionLibMongoCryptController(
@@ -97,8 +98,9 @@ namespace MongoDB.Driver
         /// SCRAM-SHA-1 is the recommended alternative for now.
         /// </summary>
         /// <param name="url">The URL.</param>
-        public MongoClient(MongoUrl url)
-            : this(MongoClientSettings.FromUrl(url))
+        /// <param name="operationExecutor"></param>
+        public MongoClient(MongoUrl url, IOperationExecutor operationExecutor = null)
+            : this(MongoClientSettings.FromUrl(url), operationExecutor)
         {
         }
 

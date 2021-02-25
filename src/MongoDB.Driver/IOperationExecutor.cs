@@ -13,15 +13,15 @@
 * limitations under the License.
 */
 
-using System;
+
 using System.Threading;
 using System.Threading.Tasks;
 using MongoDB.Driver.Core.Bindings;
 using MongoDB.Driver.Core.Operations;
-
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
 namespace MongoDB.Driver
 {
-    internal interface IOperationExecutor
+    public interface IOperationExecutor
     {
         TResult ExecuteReadOperation<TResult>(IReadBinding binding, IReadOperation<TResult> operation, CancellationToken cancellationToken);
         Task<TResult> ExecuteReadOperationAsync<TResult>(IReadBinding binding, IReadOperation<TResult> operation, CancellationToken cancellationToken);
